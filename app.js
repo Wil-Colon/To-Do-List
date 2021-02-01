@@ -5,47 +5,75 @@ const bodyParser = require('body-parser');
 const port = 3000;
 const app = express();
 
-var items = ["Buy Food","Cook Food","Eat Food"];
+let items = ["Buy Food", "Cook Food", "Eat Food"];
+let workItems = [];
 
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+app.use(express.static('public'));
+
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
 
-  var today = new Date();
+  let today = new Date();
 
-  var options = {
+  let options = {
     weekday: "long",
     day: "numeric",
     month: "long"
   };
 
-  var day = today.toLocaleDateString("en-US", options);
+  let day = today.toLocaleDateString("en-US", options);
 
+///////////////////////////// To do List Page
   res.render("list", {
-    kindOfDay: day,
+    listTitle: day,
     newListItems: items
   });
 });
 
 app.post("/", (req, res) => {
-  var item = req.body.newItem;
 
-  items.push(item);
+  let item = req.body.newItem;
 
+if (req.body.list === "Work List"){
+  workItems.push(item);
+  res.redirect('/work');
+} else {
+    items.push(item);
+    res.redirect('/');
+}
 
-  res.redirect('/');
 
 });
 
+///////////////////////////////// Work List Page
+app.get('/work', (req, res) => {
+  res.render('list', {
+    listTitle: "Work List",
+    newListItems: workItems
+  });
+});
 
-// app.get('/', (req, res) => {
-//   res.render('index', {foo: 'FOO'});
+// app.post('/work', (req, res) => {
+//
+//   let item = req.body.newItem;
+//   workItems.push(item);
+//   res.redirect('/work');
+//
 // });
 
+//////////////////////////////////////About Page
+app.get('/about',(req,res) => {
+  res.render("about");
+});
+
+
+
+/////////////////////////////////// PORT Stuff
 app.listen(process.env.PORT || port, () => {
   console.log(`listening on port ${port}`);
 });
