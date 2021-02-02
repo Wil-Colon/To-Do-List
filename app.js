@@ -4,9 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const port = 3000;
 const app = express();
+const date = require(__dirname + '/date.js');
 
-let items = ["Buy Food", "Cook Food", "Eat Food"];
-let workItems = [];
+const items = ["Buy Food", "Cook Food", "Eat Food"];
+const workItems = [];
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -18,17 +19,10 @@ app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
 
-  let today = new Date();
+  const day = date.getDate();
 
-  let options = {
-    weekday: "long",
-    day: "numeric",
-    month: "long"
-  };
 
-  let day = today.toLocaleDateString("en-US", options);
-
-///////////////////////////// To do List Page
+  ///////////////////////////// To do List Page
   res.render("list", {
     listTitle: day,
     newListItems: items
@@ -39,13 +33,13 @@ app.post("/", (req, res) => {
 
   let item = req.body.newItem;
 
-if (req.body.list === "Work List"){
-  workItems.push(item);
-  res.redirect('/work');
-} else {
+  if (req.body.list === "Work List") {
+    workItems.push(item);
+    res.redirect('/work');
+  } else {
     items.push(item);
     res.redirect('/');
-}
+  }
 
 
 });
@@ -67,7 +61,7 @@ app.get('/work', (req, res) => {
 // });
 
 //////////////////////////////////////About Page
-app.get('/about',(req,res) => {
+app.get('/about', (req, res) => {
   res.render("about");
 });
 
